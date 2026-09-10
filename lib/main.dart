@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const BaseballStatsApp());
 }
 
 class BaseballStatsApp extends StatelessWidget {
@@ -32,7 +32,7 @@ class BaseballStatsApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: const MyHomePage(title: 'StatRuns'),
     );
   }
 }

@@ -8,12 +8,12 @@ class HomeScreen extends StatelessWidget{
     return Scaffold(
       appBar: AppBar(
         title: const Text('Baseball Stats'),
-        backgroundColor: Theme.of(conetxt).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: const Center(
         child: Text(
-          'Baseball Stats - coming soon'
-              style: TextStyle(fontSize: 18),
+          'Baseball Stats - coming soon',
+           style: TextStyle(fontSize: 18),
         ),
       ),
     );

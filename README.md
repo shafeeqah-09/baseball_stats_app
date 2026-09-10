@@ -1,19 +1,16 @@
 # baseball_stats_app
 
-A new Flutter project.
+A new Flutter app Project that will track baseball player statistics.
 
-## Getting Started
+## Status 
+Day 2 - project skeleton in place (home screen, folder structure and Player model)
 
-This project is a starting point for a Flutter application.
+## STRUCTURE
+- `lib/screens/` — UI screens
+- `lib/models/` — data models
+- `lib/services/` — API / Firebase / storage
+- `lib/widgets/` — reusable widgets
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-
+## Commands
+flutter pub get 
+flutter run 
