@@ -6,9 +6,9 @@ class Player{
 
   const Player({
     required this.id,
-    required this.name;
-    required this.position;
-    required this.battingAverage
+    required this.name,
+    required this.position,
+    required this.battingAverage,
 });
 //   const - compile time constant never changes
 //   final - runtime constant set once
