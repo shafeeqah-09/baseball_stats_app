@@ -1,12 +1,14 @@
 class Player{
   final String id;
   final String name;
+  final String team;
   final String position;
   final double battingAverage;
 
   const Player({
     required this.id,
     required this.name,
+    requiredgi this.team,
     required this.position,
     required this.battingAverage,
 });
