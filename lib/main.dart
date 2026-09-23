@@ -237,12 +237,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
 class PlayerListScreen extends StatelessWidget {
   const PlayerListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Players'),
@@ -254,31 +255,111 @@ class PlayerListScreen extends StatelessWidget {
         ],
       ),
       body: ListView(
-        children: const [
-          ListTile(
-            leading: CircleAvatar(child: Text('S')),
-            title: Text('Shohei Ohtani'),
-            subtitle: Text('Dodgers • AVG: 0.310'),
-            trailing: Text('HR: 44'),
+        children: [
+          // ACCOUNT SECTION
+          Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A3A6B),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: const Color(0xFFD32F2F),
+                  child: Text(
+                    user?.email?[0].toUpperCase() ?? 'U',
+                    style: const TextStyle(fontSize: 24, color: Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'SIGNED IN AS',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        user?.email ?? 'Unknown',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          ListTile(
-            leading: CircleAvatar(child: Text('A')),
-            title: Text('Aaron Judge'),
-            subtitle: Text('Yankees • AVG: 0.280'),
-            trailing: Text('HR: 48'),
+
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Text(
+              'PLAYERS',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 12,
+                letterSpacing: 2,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-          ListTile(
-            leading: CircleAvatar(child: Text('M')),
-            title: Text('Mookie Betts'),
-            subtitle: Text('Dodgers • AVG: 0.300'),
-            trailing: Text('HR: 35'),
-          ),
+
+          _playerTile(context, 'Shohei Ohtani', 'Dodgers', '0.310', '44', '95', '20'),
+          _playerTile(context, 'Aaron Judge', 'Yankees', '0.280', '48', '110', '8'),
+          _playerTile(context, 'Mookie Betts', 'Dodgers', '0.300', '35', '80', '15'),
         ],
       ),
     );
   }
-}
 
+  Widget _playerTile(
+      BuildContext context,
+      String name,
+      String team,
+      String avg,
+      String hr,
+      String rbi,
+      String sb,
+      ) {
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: const Color(0xFF1976D2),
+        child: Text(name[0], style: const TextStyle(color: Colors.white)),
+      ),
+      title: Text(name, style: const TextStyle(color: Colors.white)),
+      subtitle: Text('$team • AVG: $avg', style: const TextStyle(color: Colors.white70)),
+      trailing: Text('HR: $hr', style: const TextStyle(color: Colors.white)),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlayerDetailScreen(
+              name: name,
+              team: team,
+              avg: avg,
+              hr: hr,
+              rbi: rbi,
+              sb: sb,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
 class AnimatedBaseballHeader extends StatefulWidget {
   const AnimatedBaseballHeader({super.key});
 
@@ -481,6 +562,149 @@ class _LoadingScreenState extends State<LoadingScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class PlayerDetailScreen extends StatefulWidget {
+  final String name;
+  final String team;
+  final String avg;
+  final String hr;
+  final String rbi;
+  final String sb;
+
+  const PlayerDetailScreen({
+    super.key,
+    required this.name,
+    required this.team,
+    required this.avg,
+    required this.hr,
+    required this.rbi,
+    required this.sb,
+  });
+
+  @override
+  State<PlayerDetailScreen> createState() => _PlayerDetailScreenState();
+}
+
+class _PlayerDetailScreenState extends State<PlayerDetailScreen> {
+  late DateTime _lastUpdated;
+
+  @override
+  void initState() {
+    super.initState();
+    _lastUpdated = DateTime.now();
+  }
+
+  void _refresh() {
+    setState(() {
+      _lastUpdated = DateTime.now();
+    });
+  }
+
+  String _timeAgo() {
+    final diff = DateTime.now().difference(_lastUpdated);
+    if (diff.inSeconds < 60) return 'Updated just now';
+    if (diff.inMinutes < 60) return 'Updated ${diff.inMinutes} min ago';
+    return 'Updated ${diff.inHours} hr ago';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _refresh,
+          ),
+        ],
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0, -0.8),
+            radius: 1.2,
+            colors: [
+              Color(0xFF1A3A6B),
+              Color(0xFF0B1F3A),
+              Color(0xFF05101F),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: const Color(0xFFD32F2F),
+                    child: Text(
+                      widget.name[0],
+                      style: const TextStyle(fontSize: 40, color: Colors.white),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: Text(
+                    widget.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Center(
+                  child: Text(
+                    widget.team,
+                    style: const TextStyle(color: Colors.white70, fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: Text(
+                    _timeAgo(),
+                    style: const TextStyle(color: Colors.white38, fontSize: 12),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                _statRow('Batting Average', widget.avg),
+                _statRow('Home Runs', widget.hr),
+                _statRow('RBIs', widget.rbi),
+                _statRow('Stolen Bases', widget.sb),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _statRow(String label, String value) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A3A6B),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 15)),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        ],
       ),
     );
   }
