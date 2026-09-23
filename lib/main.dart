@@ -115,6 +115,20 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> resetPassword() async {
+    final email = emailController.text.trim();
+    if (email.isEmpty) {
+      setState(() => errorMessage = 'Enter your email first');
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      setState(() => errorMessage = 'Reset email sent to $email');
+    } on FirebaseAuthException catch (e) {
+      setState(() => errorMessage = e.message);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -207,6 +221,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: isLoading ? null : resetPassword,
+                  child: const Text(
+                    'Forgot password?',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ),
               ],
             ),
           ),
@@ -215,6 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
 class PlayerListScreen extends StatelessWidget {
   const PlayerListScreen({super.key});
 
