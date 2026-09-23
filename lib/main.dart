@@ -2,6 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+
+final List<String> baseballFacts = [
+  'The first World Series was played in 1903.',
+  'A baseball has 108 stitches.',
+  'The fastest pitch ever recorded was 105.1 mph by Aroldis Chapman.',
+  'Babe Ruth hit 714 home runs in his career.',
+  'The longest game in MLB history lasted 25 innings.',
+  'A perfect game has only happened 23 times in MLB history.',
+  'The average baseball game lasts about 3 hours.',
+  'Jackie Robinson broke the color barrier in 1947.',
+  'The youngest player to hit a home run was 15 years old.',
+  'Yankee Stadium is called "The House That Ruth Built".',
+];
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -43,9 +57,7 @@ class AuthWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const LoadingScreen();
         }
         if (snapshot.hasData) {
           return const PlayerListScreen();
@@ -377,6 +389,75 @@ class _AnimatedBaseballHeaderState extends State<AnimatedBaseballHeader>
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class LoadingScreen extends StatefulWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  State<LoadingScreen> createState() => _LoadingScreenState();
+}
+
+class _LoadingScreenState extends State<LoadingScreen> {
+  late String _fact;
+
+  @override
+  void initState() {
+    super.initState();
+    _fact = baseballFacts[DateTime.now().microsecond % baseballFacts.length];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0, -0.8),
+            radius: 1.2,
+            colors: [
+              Color(0xFF1A3A6B),
+              Color(0xFF0B1F3A),
+              Color(0xFF05101F),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(color: Colors.white),
+                const SizedBox(height: 30),
+                const Icon(Icons.sports_baseball, size: 60, color: Colors.white),
+                const SizedBox(height: 20),
+                const Text(
+                  'DID YOU KNOW?',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _fact,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
