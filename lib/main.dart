@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.sports_baseball, size: 80, color: Colors.blue),
+            const AnimatedBaseballHeader(),
             const SizedBox(height: 20),
             TextField(
               controller: emailController,
