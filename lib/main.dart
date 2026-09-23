@@ -198,3 +198,141 @@ class PlayerListScreen extends StatelessWidget {
     );
   }
 }
+
+class AnimatedBaseballHeader extends StatefulWidget {
+  const AnimatedBaseballHeader({super.key});
+
+  @override
+  State<AnimatedBaseballHeader> createState() => _AnimatedBaseballHeaderState();
+}
+
+class _AnimatedBaseballHeaderState extends State<AnimatedBaseballHeader>
+    with TickerProviderStateMixin {
+  late AnimationController _glowController;
+  late AnimationController _swingController;
+  late AnimationController _ballController;
+
+  late Animation<double> _glow;
+  late Animation<double> _batSwing;
+  late Animation<double> _ballFly;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+
+    _glow = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    );
+
+    _swingController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+
+    _batSwing = Tween<double>(begin: -0.4, end: 0.4).animate(
+      CurvedAnimation(parent: _swingController, curve: Curves.easeInOut),
+    );
+
+    _ballController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat();
+
+    _ballFly = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _ballController, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    _swingController.dispose();
+    _ballController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 160,
+      width: 260,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          AnimatedBuilder(
+            animation: _glow,
+            builder: (context, child) {
+              return Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(_glow.value * 0.7),
+                      blurRadius: 30 * _glow.value,
+                      spreadRadius: 10 * _glow.value,
+                    ),
+                    BoxShadow(
+                      color: Colors.lightBlue.withOpacity(_glow.value * 0.4),
+                      blurRadius: 60 * _glow.value,
+                      spreadRadius: 15 * _glow.value,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.sports_baseball,
+                  size: 100,
+                  color: Colors.white,
+                ),
+              );
+            },
+          ),
+          Positioned(
+            left: 0,
+            bottom: 30,
+            child: AnimatedBuilder(
+              animation: _batSwing,
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: _batSwing.value,
+                  alignment: Alignment.bottomCenter,
+                  child: const Icon(
+                    Icons.sports_baseball_outlined,
+                    size: 70,
+                    color: Colors.brown,
+                  ),
+                );
+              },
+            ),
+          ),
+          Positioned(
+            right: 0 - (_ballFly.value * 80),
+            top: 20 - (_ballFly.value * 20),
+            child: AnimatedBuilder(
+              animation: _ballFly,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: 1 - _ballFly.value,
+                  child: Transform.scale(
+                    scale: 1 - (_ballFly.value * 0.5),
+                    child: const Icon(
+                      Icons.sports_baseball,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
